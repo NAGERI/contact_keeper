@@ -3,6 +3,9 @@ require("dotenv").config();
 const connectDB = require("./config/db");
 const app = express();
 
+// Initialize Middleware
+app.use(express.json({ extended: false }));
+
 // Extra security packages
 // const helmet = require("helmet");
 const cors = require("cors");
@@ -21,7 +24,7 @@ app.use("/api/v0/contacts", require("./routes/contacts"));
 app.use(cors());
 app.listen(PORT, () => {
   try {
-    connectDB(process.env.MONGODB_URI);
+    // connectDB(process.env.MONGODB_URI);
     console.log(`Server is running on port ${PORT}`);
   } catch (err) {
     console.error(err.message);
