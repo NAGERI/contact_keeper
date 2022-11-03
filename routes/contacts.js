@@ -1,5 +1,8 @@
 const express = require("express");
 const router = express.Router();
+const auth = require("../middleware/auth");
+const { check, validationResult } = require("express-validator");
+const Contact = require("../models/Contacts");
 
 // Include CORS in the API calls
 
@@ -8,8 +11,16 @@ const router = express.Router();
  * @desc   Get all user contacts
  * @access Private
  */
-router.get("/", (req, res) => {
-  res.send("Get all Contacts");
+router.get("/", auth, async (req, res) => {
+  try {
+    const contacts = await Contact.find({ user: req.user.id }).sort({
+      date: -1,
+    });
+    res.json(contacts);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server Error");
+  }
 });
 
 /**
@@ -17,9 +28,32 @@ router.get("/", (req, res) => {
  * @desc   Get akk user contacts
  * @access Private
  */
-router.post("/", (req, res) => {
-  res.send("Add a Contact");
-});
+router.post(
+  "/",
+  [auth, check("name", "Name is requires").not().isEmpty()],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const { name, email, phone, type } = req.body;
+
+    try {
+      const new_contact = new Contact({
+        name,
+        email,
+        phone,
+        type,
+        user: req.user.id,
+      });
+      const contact = await new_contact.save();
+      res.json(contact);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).json({ error: err.message });
+    }
+  }
+);
 
 /**
  * @route  PUT api/users
