@@ -1,5 +1,6 @@
+/* eslint-disable no-unused-vars */
 import React, { useReducer } from "react";
-import uuid from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import ContactContext from "./contactContext";
 import contactReducer from "./contactReducer";
 import {
@@ -23,17 +24,17 @@ const ContactState = (props) => {
       },
       {
         id: 2,
-        name: "Mary John",
+        name: "Mary Jane",
         email: "may@email.com",
         phone: "111-111-111",
         type: "personal",
       },
       {
         id: 3,
-        name: "Harry WhiteJill John",
+        name: "Harry White",
         email: "harry@email.com",
         phone: "291-231-111",
-        type: "personal",
+        type: "professional",
       },
     ],
   };
@@ -47,6 +48,10 @@ const ContactState = (props) => {
    * Actions we are having
    */
   // add
+  const addContact = (contact) => {
+    contact.id = uuidv4();
+    dispatch({ type: ADD_CONTACT, payload: contact });
+  };
   // Delete
   //Set Current
   // Clear Current
@@ -55,12 +60,8 @@ const ContactState = (props) => {
   // Clear Filter
 
   return (
-    <ContactContext.Provider>
-      {/* What we access from other states */}
-      value ={" "}
-      {{
-        contacts: state.contacts,
-      }}
+    // {/* What we access from other states */}
+    <ContactContext.Provider value={{ contacts: state.contacts, addContact }}>
       {props.children}
     </ContactContext.Provider>
   );
