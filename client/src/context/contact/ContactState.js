@@ -5,11 +5,12 @@ import ContactContext from "./contactContext";
 import contactReducer from "./contactReducer";
 import {
   ADD_CONTACT,
-  CLEAR_CURRENT,
-  CLEAR_FILTER,
+  UPDATE_CONTACT,
   DELETE_CONTACT,
-  FILTER_CONTACTS,
   SET_CURRENT,
+  CLEAR_CURRENT,
+  FILTER_CONTACTS,
+  CLEAR_FILTER,
 } from "../types";
 
 const ContactState = (props) => {
@@ -37,6 +38,8 @@ const ContactState = (props) => {
         type: "professional",
       },
     ],
+    current: null, // when edit is clicked this wil contain a value.
+    filtered: null,
   };
   /**
    * State - allows to access anything in our state
@@ -53,15 +56,46 @@ const ContactState = (props) => {
     dispatch({ type: ADD_CONTACT, payload: contact });
   };
   // Delete
+  const deleteContact = (id) => {
+    dispatch({ type: DELETE_CONTACT, payload: id });
+  };
   //Set Current
+  const setCurrent = (contact) => {
+    dispatch({ type: SET_CURRENT, payload: contact });
+  };
   // Clear Current
+  const clearCurrent = () => {
+    dispatch({ type: CLEAR_CURRENT });
+  };
   // Update Contact
+  const updateContact = (contact) => {
+    dispatch({ type: UPDATE_CONTACT, payload: contact });
+  };
   // Filter Contact
+  const filterContacts = (text) => {
+    dispatch({ type: FILTER_CONTACTS, payload: text });
+  };
   // Clear Filter
+  const clearFilter = () => {
+    dispatch({ type: CLEAR_FILTER });
+  };
 
   return (
-    // {/* What we access from other states */}
-    <ContactContext.Provider value={{ contacts: state.contacts, addContact }}>
+    // {/* What we access from other states | Providing method to our state*/}
+    <ContactContext.Provider
+      value={{
+        contacts: state.contacts,
+        current: state.current,
+        filtered: state.filtered,
+        addContact,
+        deleteContact,
+        setCurrent,
+        clearCurrent,
+        updateContact,
+        filterContacts,
+        clearFilter,
+      }}
+    >
       {props.children}
     </ContactContext.Provider>
   );
