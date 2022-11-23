@@ -14,6 +14,7 @@ const cors = require("cors");
 
 const PORT = process.env.PORT || 5000;
 
+app.use(cors());
 app.get("/", (req, res) => {
   res.json({ msg: "Hello World from server" });
 });
@@ -21,7 +22,6 @@ app.use("/api/v0/users", require("./routes/users"));
 app.use("/api/v0/auth", require("./routes/auth"));
 app.use("/api/v0/contacts", require("./routes/contacts"));
 
-app.use(cors());
 app.listen(PORT, () => {
   try {
     connectDB(process.env.MONGODB_URI);

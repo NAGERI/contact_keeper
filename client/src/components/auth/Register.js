@@ -1,20 +1,25 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AlertContext from "../../context/alert/alertContext";
 import AuthContext from "../../context/auth/authContext";
 
-const Register = () => {
+const Register = (props) => {
   const alertContext = useContext(AlertContext);
   const authContext = useContext(AuthContext);
   const { setAlert } = alertContext;
-  const { register, error, clearErrors } = authContext;
-
+  const { register, error, clearErrors, isAuthenticated } = authContext;
+  let nav = useNavigate();
   useEffect(() => {
+    if (isAuthenticated) {
+      /**Redirection for react */
+      nav("/");
+    }
     if (error !== null) {
       setAlert(error, "danger");
       clearErrors();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [error]);
+  }, [error, isAuthenticated, props.history]);
 
   const [user, setUser] = useState({
     name: "",

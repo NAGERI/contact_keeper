@@ -3,6 +3,7 @@ import React, { useReducer } from "react";
 import axios from "axios";
 import AuthContext from "./authContext";
 import authReducer from "./authReducer";
+import setAuthToken from "../../utils/setAuthToken";
 import {
   REGISTER_SUCCESS,
   REGISTER_FAIL,
@@ -15,13 +16,20 @@ import {
 } from "../types";
 
 const AuthState = (props) => {
-  const api_version = "/api/v0";
+  const api_version = "http://localhost:5000/api/v0";
   const initialState = {
     token: localStorage.getItem("token"),
     user: null,
     isAuthenticated: null,
     loading: true,
     error: null,
+  };
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      Authorization: "Bearer " + localStorage.getItem("token"),
+    },
   };
   /**
    * State - allows to access anything in our state
@@ -34,8 +42,26 @@ const AuthState = (props) => {
    */
   // Load User
 
-  const loadUser = () => {
-    console.log("Load User");
+  const loadUser = async () => {
+    if (localStorage.token) {
+      setAuthToken(localStorage.token);
+    }
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+    };
+    try {
+      const res = await axios.get(`${api_version}/auth`, config);
+      dispatch({
+        type: USER_LOADED,
+        payload: res.data,
+      });
+    } catch (err) {
+      dispatch({ type: AUTH_ERROR });
+    }
   };
   // Register User
   const register = async (formData) => {
@@ -43,10 +69,12 @@ const AuthState = (props) => {
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
+        Authorization: localStorage.getItem("token"),
       },
     };
+
     try {
-      const res = await axios.post(`${api_version}+/users`, formData, config);
+      const res = await axios.post(`${api_version}/users`, formData, config);
       dispatch({
         type: REGISTER_SUCCESS,
         payload: res.data /**TOKEN from backend */,
@@ -54,7 +82,7 @@ const AuthState = (props) => {
     } catch (err) {
       dispatch({
         type: REGISTER_FAIL,
-        payload: err.response.data.msg /**ERROR from backend */,
+        payload: err.response.data.error /**ERROR from backend */,
       });
     }
   };

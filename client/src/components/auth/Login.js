@@ -1,7 +1,17 @@
-import e from "cors";
-import React, { useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
+import AuthContext from "../../context/auth/authContext";
 
-const Login = () => {
+const Login = (props) => {
+  const authContext = useContext(AuthContext);
+
+  const { isAuthenticated } = authContext;
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      /**Redirection for react */
+      props.history.push("/");
+    }
+  });
   const [user, setUser] = useState({
     name: "",
     email: "",
@@ -10,9 +20,9 @@ const Login = () => {
   const { email, password } = user;
   const onChange = (e) => setUser({ ...user, [e.target.name]: e.target.value });
 
-  const onSubmit = () => {
-    console.log("Login Submited");
+  const onSubmit = (e) => {
     e.preventDefault();
+    console.log("Login Submited");
   };
   return (
     <div className="form-container">

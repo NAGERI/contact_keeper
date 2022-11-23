@@ -1,8 +1,22 @@
-import { REGISTER_SUCCESS, REGISTER_FAIL, CLEAR_ERRORS } from "../types";
+import {
+  REGISTER_SUCCESS,
+  REGISTER_FAIL,
+  CLEAR_ERRORS,
+  USER_LOADED,
+  AUTH_ERROR,
+} from "../types";
 
 //eslint-disable-next-line import/no-anonymous-default-export
 export default (state, action) => {
   switch (action.type) {
+    case USER_LOADED:
+      return {
+        ...state,
+        ...action.payload,
+        isAuthenticated: true,
+        loading: false,
+      };
+    case AUTH_ERROR:
     case REGISTER_SUCCESS:
       localStorage.setItem("token", action.payload.token);
       return {
