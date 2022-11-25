@@ -1,17 +1,29 @@
 import React, { useContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import AuthContext from "../../context/auth/authContext";
+import AlertContext from "../../context/alert/alertContext";
 
 const Login = (props) => {
   const authContext = useContext(AuthContext);
+  const alertContext = useContext(AlertContext);
 
-  const { isAuthenticated } = authContext;
-
+  const { login, error, clearErrors, isAuthenticated } = authContext;
+  const { setAlert } = alertContext;
+  let nav = useNavigate();
   useEffect(() => {
     if (isAuthenticated) {
-      /**Redirection for react */
-      props.history.push("/");
+      /**Redirection for react
+       * props.histroy.push("/")
+       */
+      nav("/");
     }
-  });
+    if (error === "Invalid Credentials") {
+      setAlert(error, "danger");
+      clearErrors();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error, isAuthenticated, props.history]);
+
   const [user, setUser] = useState({
     name: "",
     email: "",
@@ -22,7 +34,11 @@ const Login = (props) => {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    console.log("Login Submited");
+    if (email === "" || password === "") {
+      setAlert("Please email and password fields", "danger");
+    } else {
+      login({ email, password });
+    }
   };
   return (
     <div className="form-container">
@@ -33,7 +49,13 @@ const Login = (props) => {
       <form onSubmit={onSubmit}>
         <div className="form-group">
           <label htmlFor="email">Email Address</label>
-          <input type="email" name="email" value={email} onChange={onChange} />
+          <input
+            type="email"
+            name="email"
+            value={email}
+            onChange={onChange}
+            required
+          />
         </div>
         <div className="form-group">
           <label htmlFor="password">Password</label>
@@ -42,6 +64,7 @@ const Login = (props) => {
             name="password"
             value={password}
             onChange={onChange}
+            required
           />
         </div>
         <input

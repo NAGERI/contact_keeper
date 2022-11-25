@@ -59,6 +59,8 @@ const AuthState = (props) => {
         type: USER_LOADED,
         payload: res.data,
       });
+      /** @TODO Test the response object here, for proper processing */
+      console.log("User loaded successfuly" + res);
     } catch (err) {
       dispatch({ type: AUTH_ERROR });
     }
@@ -69,7 +71,7 @@ const AuthState = (props) => {
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
-        Authorization: localStorage.getItem("token"),
+        Authorization: "Bearer " + localStorage.getItem("token"),
       },
     };
 
@@ -79,6 +81,7 @@ const AuthState = (props) => {
         type: REGISTER_SUCCESS,
         payload: res.data /**TOKEN from backend */,
       });
+      loadUser();
     } catch (err) {
       dispatch({
         type: REGISTER_FAIL,
@@ -88,12 +91,24 @@ const AuthState = (props) => {
   };
 
   // Login user
-  const login = () => {
-    console.log("Login");
+  const login = async (formData) => {
+    try {
+      const res = await axios.post(`${api_version}/auth`, formData, config);
+      dispatch({
+        type: LOGIN_SUCCESS,
+        payload: res.data /**TOKEN from backend */,
+      });
+      loadUser();
+    } catch (err) {
+      dispatch({
+        type: LOGIN_FAIL,
+        payload: err.response.data.error /**ERROR from backend */,
+      });
+    }
   };
   // LogOut
   const logout = () => {
-    console.log("Logout");
+    dispatch({ type: LOGOUT });
   };
   // Clear Errors
   const clearErrors = () => {
