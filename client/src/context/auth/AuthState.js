@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useReducer } from "react";
+import React, { useEffect, useReducer } from "react";
 import axios from "axios";
 import AuthContext from "./authContext";
 import authReducer from "./authReducer";
@@ -60,8 +60,9 @@ const AuthState = (props) => {
         payload: res.data,
       });
       /** @TODO Test the response object here, for proper processing */
-      console.log("User loaded successfuly" + res);
+      console.log("User loaded successfuly " + res.data.toString());
     } catch (err) {
+      console.info(" Loading User Failed  ", err.response.data.msg);
       dispatch({ type: AUTH_ERROR });
     }
   };
@@ -98,6 +99,8 @@ const AuthState = (props) => {
         type: LOGIN_SUCCESS,
         payload: res.data /**TOKEN from backend */,
       });
+      //* Testing the route
+      console.info("After Login data  ", res.data);
       loadUser();
     } catch (err) {
       dispatch({
@@ -114,6 +117,12 @@ const AuthState = (props) => {
   const clearErrors = () => {
     dispatch({ type: CLEAR_ERRORS });
   };
+
+  setAuthToken(state.token);
+
+  useEffect(() => {
+    setAuthToken(state.token);
+  }, [state.token]);
   return (
     // {/* What we access from other states | Providing method to our state*/}
     <AuthContext.Provider
