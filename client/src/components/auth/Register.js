@@ -14,7 +14,7 @@ const Register = (props) => {
       /**Redirection for react */
       nav("/");
     }
-    if (error !== null) {
+    if (error === "User already exists") {
       setAlert(error, "danger");
       clearErrors();
     }

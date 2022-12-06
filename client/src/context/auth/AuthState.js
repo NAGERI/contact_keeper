@@ -60,7 +60,7 @@ const AuthState = (props) => {
         payload: res.data,
       });
       /** @TODO Test the response object here, for proper processing */
-      console.log("User loaded successfuly " + res.data.toString());
+      console.log("User loaded successfuly " + res.data.user.email);
     } catch (err) {
       console.info(" Loading User Failed  ", err.response.data.msg);
       dispatch({ type: AUTH_ERROR });
@@ -103,6 +103,7 @@ const AuthState = (props) => {
       console.info("After Login data  ", res.data);
       loadUser();
     } catch (err) {
+      console.warn("After Login error  ", err.response);
       dispatch({
         type: LOGIN_FAIL,
         payload: err.response.data.error /**ERROR from backend */,
